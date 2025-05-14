@@ -1,0 +1,40 @@
+function mem = mem_plot(mem,D)
+DOFS = mem.DOFS;
+syms z Y1 Y2 Y3 R1 R2 R3;
+Amli = mem.Aml;
+Rt = mem.Rt;
+mdofs = mem.mdofs;
+L = mem.L;
+D_mem = D(mdofs);
+S = mem.Sg;
+Amlf = Amli + Rt.'*S*D_mem;
+mem.Amlf = Amlf;
+mem.D = D_mem;
+Aml_gen = zeros([6,1]);
+Aml_gen([DOFS,DOFS]) = Amlf;
+Mx = mem.Mx;
+Sy = mem.Sy;
+Nz = mem.Nz;
+Mx = subs(subs(subs(subs(subs(subs(Mx,Y1,Aml_gen(4)),Y2,Aml_gen(5)),Y3,Aml_gen(6)),R1,Aml_gen(1)),R2,Aml_gen(2)),R3,Aml_gen(3));
+Sy = subs(subs(subs(subs(subs(subs(Sy,Y1,Aml_gen(4)),Y2,Aml_gen(5)),Y3,Aml_gen(6)),R1,Aml_gen(1)),R2,Aml_gen(2)),R3,Aml_gen(3));
+Nz = subs(subs(subs(subs(subs(subs(Nz,Y1,Aml_gen(4)),Y2,Aml_gen(5)),Y3,Aml_gen(6)),R1,Aml_gen(1)),R2,Aml_gen(2)),R3,Aml_gen(3));
+ti_c = mem.figtitle;
+Z_plot = linspace(0,L,1e3);
+Mx_plot = double(subs(Mx,z,Z_plot));
+Sy_plot = double(subs(Sy,z,Z_plot));
+Nz_plot = double(subs(Nz,z,Z_plot));
+figure;
+
+t = tiledlayout(3,1,"TileSpacing","tight");
+t.Title.String = ti_c;
+t.XLabel.String = "Z";
+nexttile;
+area(Z_plot,Mx_plot);
+ylabel("Moment");
+nexttile;
+area(Z_plot,Sy_plot);
+ylabel("Shear");
+nexttile;
+area(Z_plot,Nz_plot);
+ylabel("Axial");
+end
